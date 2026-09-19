@@ -1,0 +1,87 @@
+import { useState } from 'react'
+import { useAuth } from '@/context/AuthContext'
+import { useNavigate, Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { BarChart3 } from 'lucide-react'
+
+export function Register() {
+  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { register } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      await register(email, username, password)
+      navigate('/')
+    } catch (err: any) {
+      setError(err.message || 'Registration failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4 shadow-lg shadow-indigo-500/20">
+            <BarChart3 className="h-7 w-7 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Create Account</h1>
+          <p className="text-sm text-zinc-400 mt-1">Get started with StockSense</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 transition-all"
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Username</label>
+            <input
+              type="text"
+              placeholder="your_username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 transition-all"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 transition-all"
+            />
+          </div>
+          {error && (
+            <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+              {error}
+            </div>
+          )}
+          <Button type="submit" className="w-full h-11" disabled={loading}>
+            {loading ? 'Creating account...' : 'Create Account'}
+          </Button>
+        </form>
+        <p className="text-center text-sm text-zinc-500 mt-6">
+          Already have an account? <Link to="/login" className="text-indigo-400 font-medium hover:underline">Sign in</Link>
+        </p>
+      </div>
+    </div>
+  )
+}
